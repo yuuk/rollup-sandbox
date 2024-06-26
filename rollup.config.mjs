@@ -3,8 +3,7 @@ import { nodeResolve } from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import peerDepsExternal from "rollup-plugin-peer-deps-external";
 import { swc, defineRollupSwcOption } from "rollup-plugin-swc3";
-
-import removeClassName from "./rollup-plugin-remove-class.mjs";
+import removeClassName from "./rollup-plugin-remove-classnames.mjs";
 
 export default defineConfig([
     {

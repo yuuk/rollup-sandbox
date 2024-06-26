@@ -1,14 +1,23 @@
 import React from "react";
 import classNames from "classnames";
 
-export const Main = () => {
+interface Props {
+    className?: string;
+}
+
+export const Main = (props: Props) => {
     return (
         <div>
+            {/* 段落一 */}
             <p
-                className={classNames("dw-text-20 cq-pc:dw-text-12", {
-                    "cq-pc:hover:text-12.5": true,
-                    "cq-mobile:text-100 dw-text-100": false,
-                })}
+                className={classNames(
+                    "dw-text-20 cq-pc:dw-text-12",
+                    {
+                        "cq-pc:hover:text-12.5": true,
+                        "cq-mobile:text-100 dw-text-100": false,
+                    },
+                    props.className
+                )}
             >
                 段落1
             </p>

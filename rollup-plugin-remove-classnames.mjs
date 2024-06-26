@@ -1,35 +1,35 @@
-import { simple } from "acorn-walk";
-import escodegen from "escodegen";
+import recast from "recast";
 
 export default function myPlugin() {
     return {
-        name: "remove-class",
-        transform(code, id) {
+        name: "rollup-remove-classnames",
+        transform(code) {
             const REG = /cq-[\w.:-]+(?:\[[^\]]+\])?/g;
-            const comments = [];
 
-            const ast = this.parse(code, { onComment: comments });
+            const ast = recast.parse(code, { tokens: false });
 
-            simple(ast, {
-                Property(node) {
-                    // console.error(JSON.stringify(node), "\n");
+            recast.visit(ast, {
+                visitProperty(path) {
+                    const { node } = path;
                     if (node.key.name === "className") {
                         node.value.value = node.value.value
                             ?.replace(REG, "")
                             .trim();
                     }
+                    this.traverse(path);
                 },
-                CallExpression(node) {
-                    // console.error(JSON.stringify(node), "\n");
+                visitCallExpression(path) {
+                    const { node } = path;
                     if (node.callee?.name === "classNames") {
                         node.arguments = node.arguments.map((item) => {
                             item.value = item.value?.replace(REG, "").trim();
                             return item;
                         });
                     }
+                    this.traverse(path);
                 },
-                ObjectExpression(node) {
-                    // console.error(JSON.stringify(node), "\n");
+                visitObjectExpression(path) {
+                    const { node } = path;
                     node.properties = node.properties
                         .map((item) => {
                             if (item.key.type === "Literal") {
@@ -47,14 +47,14 @@ export default function myPlugin() {
                             }
                             return true;
                         });
+                    this.traverse(path);
                 },
             });
 
-            const newCode = escodegen.generate(ast);
+            const newCode = recast.print(ast).code;
 
             return {
                 code: newCode,
-                map: null,
             };
         },
     };
